@@ -1,0 +1,25 @@
+body {
+    background: #0e0e1a;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  .card {
+    background: #1b1b2f;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  select, button {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  button {
+    background: #0ed88b;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
