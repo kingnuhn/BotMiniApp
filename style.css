@@ -436,4 +436,127 @@ body {
   
   #send:hover {
     box-shadow: 0 0 10px rgba(44, 130, 224, 0.5);
+  }:root {
+    --primary-color: #2c82e0;
+    --card-bg: #2d2d2d;
+    --text-color: #ffffff;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+  }
+  
+  .app-container {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .bot-header {
+    text-align: center;
+    padding: 15px 0;
+    font-size: clamp(16px, 4vw, 18px);
+  }
+  
+  .blue-line {
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color);
+    margin: 8px auto 0;
+  }
+  
+  .content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+  }
+  
+  .settings-card, .signal-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: clamp(15px, 3vw, 20px);
+    width: 100%;
+  }
+  
+  .signal-card {
+    border: 1.5px solid var(--primary-color);
+    box-shadow: 0 0 10px rgba(44, 130, 224, 0.3);
+    position: relative;
+    flex: 1;
+  }
+  
+  .bottom-bar {
+    height: 4px;
+    background-color: var(--primary-color);
+    width: 100%;
+    position: sticky;
+    bottom: 0;
+  }
+  
+  /* Адаптивные шрифты */
+  h2 {
+    font-size: clamp(16px, 4vw, 18px);
+  }
+  
+  label, select, button {
+    font-size: clamp(14px, 3.5vw, 16px);
+  }
+  
+  /* Адаптивные элементы формы */
+  select, button {
+    width: 100%;
+    height: clamp(40px, 8vw, 45px);
+    padding: 0 12px;
+  }
+  
+  button {
+    margin-top: clamp(15px, 3vw, 20px);
+  }
+  
+  /* Медиа-запросы для особых случаев */
+  @media (max-height: 600px) {
+    .content-wrapper {
+      gap: 10px;
+    }
+    
+    .settings-card, .signal-card {
+      padding: 12px;
+    }
+  }
+  
+  @media (orientation: landscape) and (max-height: 400px) {
+    .app-container {
+      min-height: auto;
+    }
+    
+    .content-wrapper {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+    
+    .settings-card {
+      width: 55%;
+    }
+    
+    .signal-card {
+      width: 45%;
+    }
   }

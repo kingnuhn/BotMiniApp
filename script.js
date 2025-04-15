@@ -149,4 +149,18 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Всегда прижимаем полосу к низу
     bottomBar.style.bottom = '0';
+  }function adaptLayout() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    
+    // Дополнительные адаптивные настройки при необходимости
+    if (window.innerHeight < 500) {
+      document.body.style.padding = '5px';
+    } else {
+      document.body.style.padding = '10px';
+    }
   }
+  
+  // Инициализация
+  window.addEventListener('load', adaptLayout);
+  window.addEventListener('resize', adaptLayout);
