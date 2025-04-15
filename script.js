@@ -1,47 +1,73 @@
-let tg = window.Telegram.WebApp;
-tg.expand();
+let tg;
+try {
+  tg = window.Telegram.WebApp;
+  tg.expand();
+} catch (e) {
+  console.error("Telegram WebApp не доступен:", e);
+  // Заглушка для тестирования вне Telegram
+  tg = { 
+    sendData: function(data) {
+      console.log("Данные для отправки:", data);
+    },
+    close: function() {}
+  };
+}
 
-document.getElementById("send").addEventListener("click", function() {
-  const btn = this;
-  btn.disabled = true;
-  btn.textContent = "Анализируем...";
+// Ожидание полной загрузки DOM
+document.addEventListener("DOMContentLoaded", function() {
+  const sendButton = document.getElementById("send");
+  
+  if (!sendButton) {
+    console.error("Кнопка не найдена!");
+    return;
+  }
 
-  // Показать анимацию загрузки
-  document.getElementById("loading").style.display = "block";
-  document.getElementById("signalResult").style.display = "none";
+  sendButton.addEventListener("click", function() {
+    const button = this;
+    button.disabled = true;
+    button.textContent = "Анализируем...";
 
-  // Генерация сигнала через 5 секунд
-  setTimeout(() => {
-    const instrument = document.getElementById("instrument").value;
-    const time = document.getElementById("time").value;
-    
-    // Генерация случайного сигнала
-    const isBuy = Math.random() > 0.5;
-    const signalType = isBuy ? "ПОКУПКА" : "ПРОДАЖА";
-    const accuracy = (80 + Math.random() * 15).toFixed(2);
+    // Показать анимацию загрузки
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("signalResult").style.display = "none";
 
-    // Обновление интерфейса
-    document.getElementById("instrumentDisplay").textContent = instrument;
-    document.getElementById("signalType").textContent = signalType;
-    document.getElementById("signalType").className = `signal-type ${isBuy ? 'buy' : 'sell'}`;
-    document.getElementById("timeDisplay").textContent = time;
-    document.getElementById("accuracyDisplay").textContent = `${accuracy}%`;
+    // Генерация сигнала через 5 секунд
+    setTimeout(() => {
+      try {
+        const instrument = document.getElementById("instrument").value;
+        const time = document.getElementById("time").value;
+        
+        // Генерация случайного сигнала
+        const isBuy = Math.random() > 0.5;
+        const signalType = isBuy ? "ПОКУПКА" : "ПРОДАЖА";
+        const accuracy = (80 + Math.random() * 15).toFixed(2);
 
-    // Скрыть загрузку и показать результат
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("signalResult").style.display = "block";
+        // Обновление интерфейса
+        document.getElementById("instrumentDisplay").textContent = instrument;
+        document.getElementById("signalType").textContent = signalType;
+        document.getElementById("signalType").className = `signal-type ${isBuy ? 'buy' : 'sell'}`;
+        document.getElementById("timeDisplay").textContent = time;
+        document.getElementById("accuracyDisplay").textContent = `${accuracy}%`;
 
-    // Отправка данных в Telegram
-    const data = {
-      instrument,
-      time,
-      signal: signalType,
-      accuracy: `${accuracy}%`
-    };
-    tg.sendData(JSON.stringify(data));
+        // Скрыть загрузку и показать результат
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("signalResult").style.display = "block";
 
-    // Восстановить кнопку
-    btn.disabled = false;
-    btn.textContent = "ПОЛУЧИТЬ СИГНАЛ";
-  }, 5000);
+        // Отправка данных в Telegram
+        const data = {
+          instrument: instrument,
+          time: time,
+          signal: signalType,
+          accuracy: `${accuracy}%`
+        };
+        tg.sendData(JSON.stringify(data));
+
+      } catch (error) {
+        console.error("Ошибка при обработке:", error);
+      } finally {
+        button.disabled = false;
+        button.textContent = "ПОЛУЧИТЬ СИГНАЛ";
+      }
+    }, 5000);
+  });
 });
