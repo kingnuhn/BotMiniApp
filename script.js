@@ -182,7 +182,23 @@ if (isMobile) {
     // Подстройка под интерфейс Telegram
     document.documentElement.style.setProperty('--tg-viewport-height', `${window.innerHeight}px`);
   }
+  function displayInstrument(instrument) {
+    const display = document.getElementById("instrumentDisplay");
+    
+    // Для инструментов с "/" (EUR/USD)
+    if (instrument.includes('/')) {
+      const [first, second] = instrument.split('/');
+      display.innerHTML = `${first}<span class="slash">/</span>${second}`;
+    } 
+    // Для инструментов без "/" (BTC)
+    else {
+      display.textContent = instrument;
+    }
+  }
 }
+document.getElementById("instrumentDisplay").innerHTML = 
+  instrument.split('/').join('<span>/</span>');
+  
 
   // Инициализация
   window.addEventListener('load', adaptLayout);
