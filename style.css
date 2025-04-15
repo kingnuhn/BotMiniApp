@@ -140,3 +140,300 @@ body {
     color: #FFC107;
     font-weight: bold;
   }
+  /* Анимированный таймер */
+.timer-container {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease-out;
+    background: #2d2d2d;
+    border-radius: 0 0 8px 8px;
+    margin-top: -20px; /* Перекрываем нижний отступ карточки */
+  }
+  
+  .timer-container.visible {
+    height: 40px;
+  }
+  
+  .timer-display {
+    color: #ff5555;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+  }
+  
+  /* Анимация для кнопки при генерации сигнала */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  
+  .shaking {
+    animation: shake 0.5s;
+  }
+  /* Стиль кнопки с обратным отсчетом */
+#send.active-countdown {
+    background-color: #2c3e50;
+    position: relative;
+  }
+  
+  #send.active-countdown::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: #e74c3c;
+    width: 100%;
+    animation: countdown linear;
+    animation-fill-mode: forwards;
+  }
+  
+  @keyframes countdown {
+    from { width: 100%; }
+    to { width: 0%; }
+  }
+  
+  /* Анимация для кнопки при анализе */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .analyzing {
+    animation: pulse 1s infinite;
+  }#send.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: #555 !important;
+  }
+  
+  #send.disabled::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: #e74c3c;
+    width: var(--progress, 100%);
+    transition: width 1s linear;
+  }body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 20px;
+  }
+  
+  /* Основной контейнер */
+  .app-container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+  }
+  
+  /* Обертка контента */
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-grow: 1;
+    justify-content: center;
+  }
+  
+  /* Карточки */
+  .settings-card, .signal-card {
+    width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #2d2d2d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+  }
+  
+  .signal-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 150px; /* Минимальная высота */
+    flex-grow: 1; /* Растягивается при необходимости */
+  }
+  
+  .signal-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }@media (max-height: 700px) {
+    .app-container {
+      min-height: auto;
+      padding: 10px 0;
+    }
+    
+    .settings-card, .signal-card {
+      padding: 15px;
+    }
+  }
+  
+  @media (max-height: 500px) {
+    .settings-card, .signal-card {
+      padding: 10px;
+    }
+    
+    h2 {
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    
+    label, select, button {
+      font-size: 13px;
+    }
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  
+  .app-container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 40px; /* Место для нижней полосы */
+  }
+  
+  .content-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* Стиль для нижней полосы */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #2c82e0;
+    z-index: 100;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  /* Адаптация для маленьких экранов */
+  @media (max-height: 600px) {
+    .content-wrapper {
+      padding: 10px;
+      justify-content: flex-start;
+    }
+    
+    .settings-card, .signal-card {
+      margin-bottom: 10px;
+    }
+  }
+  /* Стили для карточки сигнала с обводкой */
+.signal-card {
+    position: relative;
+    border-radius: 12px;
+    background-color: #2d2d2d;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(44, 130, 224, 0.3);
+    overflow: hidden; /* Для псевдоэлементов */
+  }
+  
+  .signal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1.5px solid #2c82e0;
+    border-radius: 12px;
+    pointer-events: none;
+    animation: pulse-glow 2s infinite alternate;
+  }
+  
+  /* Стили для заголовка "Сигнал" */
+  .signal-card h2 {
+    position: relative;
+    display: inline-block;
+    padding: 0 15px;
+  }
+  
+  .signal-card h2::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1.5px solid #2c82e0;
+    border-radius: 6px;
+    animation: pulse-glow 2s infinite alternate;
+    z-index: -1;
+  }
+  
+  .signal-card h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background-color: #2c82e0;
+    box-shadow: 0 0 5px #2c82e0;
+  }
+  
+  /* Анимация свечения */
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 0 5px rgba(44, 130, 224, 0.3);
+      opacity: 0.8;
+    }
+    100% {
+      box-shadow: 0 0 15px rgba(44, 130, 224, 0.7);
+      opacity: 1;
+    }
+  }
+  
+  /* Для кнопки получения сигнала */
+  #send {
+    transition: all 0.3s;
+  }
+  
+  #send:hover {
+    box-shadow: 0 0 10px rgba(44, 130, 224, 0.5);
+  }
