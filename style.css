@@ -69,11 +69,17 @@
   }
   
   .signal-card {
-    position: relative;
-    border: 1.5px solid var(--primary-color);
-    box-shadow: 0 0 10px rgba(44, 130, 224, 0.3);
-    flex: 1;
-    overflow: hidden;
+     position: relative;
+  background-color: #2d2d2d;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+  text-align: center; /* Центрируем весь текст */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Центрируем дочерние элементы */
   }
   
   .signal-card::before {
@@ -188,22 +194,31 @@
   }
   
   .signal-type {
-    font-size: clamp(18px, 4vw, 22px);
+    display: inline-block;
+    font-size: clamp(1.2rem, 5vw, 1.5rem); /* Адаптивный размер шрифта */
     font-weight: bold;
-    text-align: center;
-    margin: clamp(10px, 2.5vw, 15px) 0;
-    padding: clamp(8px, 2vw, 10px);
+    margin: clamp(10px, 3vw, 15px) 0;
+    padding: clamp(8px, 2vw, 12px) clamp(15px, 6vw, 25px); /* Адаптивные отступы */
     border-radius: 8px;
+    text-align: center;
+    width: auto;
+    min-width: min(180px, 50vw); /* Адаптивная минимальная ширина */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px currentColor;
+    transition: all 0.3s ease;
   }
   
   .buy {
-    color: var(--secondary-color);
-    background-color: rgba(76, 175, 80, 0.1);
+    color: #00ff00;
+    background-color: rgba(0, 255, 0, 0.1);
+    animation: pulse-green 2s infinite alternate;
   }
   
   .sell {
-    color: var(--error-color);
-    background-color: rgba(244, 67, 54, 0.1);
+    color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.1);
+    animation: pulse-red 2s infinite alternate;
   }
   
   .signal-details {
@@ -243,11 +258,7 @@
   }
   
   #instrumentDisplay::after {
-    content: '/';
-    display: inline;
-    color: var(--primary-color);
-    font-weight: bold;
-    padding: 0 2px;
+    display: none; /* Полностью скрываем псевдоэлемент */
   }
   
   #instrumentDisplay:not(:contains('/'))::after {
@@ -388,4 +399,41 @@
     .signal-card {
       width: 45%;
     }
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
+        100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+      }
+      
+      @keyframes pulse-red {
+        0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+        100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+      }
+      
+      /* Адаптация для маленьких экранов */
+      @media (max-width: 480px) {
+        .signal-type {
+          min-width: 140px; /* Уже на очень маленьких экранах */
+          padding: 10px 15px;
+          font-size: 1.3rem;
+        }
+        
+        /* Уменьшаем интенсивность свечения на мобильных */
+        @keyframes pulse-green {
+          0% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.4); }
+          100% { box-shadow: 0 0 12px rgba(0, 255, 0, 0.6); }
+        }
+        
+        @keyframes pulse-red {
+          0% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.4); }
+          100% { box-shadow: 0 0 12px rgba(255, 0, 0, 0.6); }
+        }
+      }
+      
+      /* Оптимизация для планшетов */
+      @media (min-width: 481px) and (max-width: 768px) {
+        .signal-type {
+          min-width: 160px;
+          font-size: 1.4rem;
+        }
+      }
   }

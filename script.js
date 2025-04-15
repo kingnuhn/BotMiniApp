@@ -194,6 +194,7 @@ if (isMobile) {
     else {
       display.textContent = instrument;
     }
+    
   }
 }
 document.getElementById("instrumentDisplay").innerHTML = 
