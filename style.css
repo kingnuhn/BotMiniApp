@@ -560,3 +560,81 @@ body {
       width: 45%;
     }
   }
+  body {
+    font-size: 16px; /* Базовый размер */
+  }
+  
+  /* Адаптивные карточки */
+  .settings-card, .signal-card {
+    width: 90%; /* вместо фиксированной ширины */
+    max-width: 400px; /* Максимальная ширина */
+    margin: 0 auto; /* Центрирование */
+    padding: 15px;
+  }
+  
+  /* Гибкие шрифты */
+  h1 {
+    font-size: clamp(18px, 5vw, 24px); /* Динамический размер */
+  }
+  
+  /* Адаптивные отступы */
+  .content-wrapper {
+    padding: 2vh 3vw;
+  }
+  @media (max-width: 768px) {
+    .bot-header {
+      font-size: 14px;
+    }
+    
+    select, button {
+      height: 45px; /* Увеличиваем для удобства касания */
+    }
+  }
+  
+  /* Для экранов меньше 480px */
+  @media (max-width: 480px) {
+    .signal-card h2 {
+      font-size: 18px;
+    }
+    
+    .signal-type {
+      font-size: 20px;
+      padding: 8px;
+    }
+    
+    .signal-details {
+      font-size: 14px;
+    }
+  }
+  
+  /* Вертикальная ориентация */
+  @media (max-height: 600px) {
+    .content-wrapper {
+      padding-top: 10px;
+    }
+    
+    .settings-card, .signal-card {
+      margin-bottom: 10px;
+    }
+  }
+  button, select {
+    min-height: 44px; /* Рекомендованный размер для тач-элементов */
+    padding: 0 15px;
+  }
+  
+  /* Отключаем подсветку при тапе */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Оптимизация анимаций */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+    img, svg {
+        max-width: 100%;
+        height: auto;
+      }
+  }

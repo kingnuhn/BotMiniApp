@@ -160,7 +160,30 @@ document.addEventListener("DOMContentLoaded", function() {
       document.body.style.padding = '10px';
     }
   }
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Оптимизация для тач-устройств
+if (isMobile) {
+  document.body.classList.add('touch-device');
   
+  // Увеличиваем время обработки тапов
+  document.addEventListener('touchend', function(e) {
+    if (e.target.id === 'send') {
+      e.preventDefault();
+      e.target.click();
+    }
+    
+  }, { passive: false });if (window.Telegram && Telegram.WebApp) {
+    // Учет области уведомлений в мобильном Telegram
+    const viewport = document.querySelector('meta[name=viewport]');
+    const viewportContent = viewport.getAttribute('content');
+    viewport.setAttribute('content', viewportContent + ', viewport-fit=cover');
+    
+    // Подстройка под интерфейс Telegram
+    document.documentElement.style.setProperty('--tg-viewport-height', `${window.innerHeight}px`);
+  }
+}
+
   // Инициализация
   window.addEventListener('load', adaptLayout);
   window.addEventListener('resize', adaptLayout);
