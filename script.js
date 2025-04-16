@@ -225,6 +225,7 @@ function handleScroll() {
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
     const timerContainer = document.querySelector('.timer-container');
     const bottomBar = document.querySelector('.bottom-bar');
+    const botHeader = document.querySelector('.bot-header');
 
     // Определяем направление прокрутки
     const scrollingDown = currentScroll > lastScrollTop;
@@ -233,13 +234,15 @@ function handleScroll() {
     // Проверяем, достаточно ли прокрутили для срабатывания анимации
     if (Math.abs(currentScroll - lastScrollTop) > scrollThreshold) {
         if (scrollingDown) {
-            // Прокрутка вниз - скрываем полоску
+            // Прокрутка вниз - скрываем полоску и заголовок
             timerContainer?.classList.add('hidden');
             bottomBar?.classList.add('hidden');
+            botHeader?.classList.add('hidden');
         } else if (scrollingUp) {
-            // Прокрутка вверх - показываем полоску
+            // Прокрутка вверх - показываем полоску и заголовок
             timerContainer?.classList.remove('hidden');
             bottomBar?.classList.remove('hidden');
+            botHeader?.classList.remove('hidden');
         }
         
         lastScrollTop = currentScroll;
@@ -251,9 +254,10 @@ function handleScroll() {
     // Устанавливаем таймер для сброса состояния прокрутки
     scrollTimeout = setTimeout(() => {
         isScrolling = false;
-        // Если прокрутка остановилась, показываем полоску
+        // Если прокрутка остановилась, показываем полоску и заголовок
         timerContainer?.classList.remove('hidden');
         bottomBar?.classList.remove('hidden');
+        botHeader?.classList.remove('hidden');
     }, 300); // Задержка в миллисекундах
 }
 
@@ -264,8 +268,10 @@ window.addEventListener('scroll', handleScroll, { passive: true });
 document.addEventListener('DOMContentLoaded', () => {
     const timerContainer = document.querySelector('.timer-container');
     const bottomBar = document.querySelector('.bottom-bar');
+    const botHeader = document.querySelector('.bot-header');
     
-    // Убедимся, что полоски видны при загрузке
+    // Убедимся, что все элементы видны при загрузке
     timerContainer?.classList.remove('hidden');
     bottomBar?.classList.remove('hidden');
+    botHeader?.classList.remove('hidden');
 });
