@@ -245,13 +245,21 @@
     background: var(--card-bg);
     border-radius: 0 0 8px 8px;
     margin-top: -20px;
-    position: sticky;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
   }
   
   .timer-container.visible {
     height: 40px;
+  }
+  
+  .timer-container.hidden {
+    transform: translateY(100%);
   }
   
   .timer-display {
@@ -356,9 +364,17 @@
     height: 4px;
     background-color: var(--primary-color);
     width: 100%;
-    position: sticky;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+  }
+  
+  .bottom-bar.hidden {
+    transform: translateY(100%);
   }
   
   #instrumentDisplay {

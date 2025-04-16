@@ -10,6 +10,11 @@ let currentTimer = null;
 let signalEndTime = 0;
 let isSignalActive = false;
 
+let lastScrollTop = 0;
+const scrollThreshold = 50; // Минимальное расстояние прокрутки для срабатывания анимации
+let isScrolling = false;
+let scrollTimeout;
+
 document.addEventListener("DOMContentLoaded", function() {
   const sendButton = document.getElementById("send");
   
@@ -120,7 +125,9 @@ document.addEventListener("DOMContentLoaded", function() {
     isSignalActive = false;
     currentTimer = null;
   }
-});function adjustLayout() {
+});
+
+function adjustLayout() {
     const windowHeight = window.innerHeight;
     const appContainer = document.querySelector('.app-container');
     
@@ -134,7 +141,8 @@ document.addEventListener("DOMContentLoaded", function() {
   // Вызываем при загрузке и изменении размера окна
   window.addEventListener('load', adjustLayout);
   window.addEventListener('resize', adjustLayout);
-  function adjustLayout() {
+
+function adjustLayout() {
     const windowHeight = window.innerHeight;
     const content = document.querySelector('.content-wrapper');
     const bottomBar = document.querySelector('.bottom-bar');
@@ -149,7 +157,9 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Всегда прижимаем полосу к низу
     bottomBar.style.bottom = '0';
-  }function adaptLayout() {
+  }
+
+function adaptLayout() {
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
     
@@ -160,7 +170,8 @@ document.addEventListener("DOMContentLoaded", function() {
       document.body.style.padding = '10px';
     }
   }
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 // Оптимизация для тач-устройств
 if (isMobile) {
@@ -173,7 +184,9 @@ if (isMobile) {
       e.target.click();
     }
     
-  }, { passive: false });if (window.Telegram && Telegram.WebApp) {
+  }, { passive: false });
+
+if (window.Telegram && Telegram.WebApp) {
     // Учет области уведомлений в мобильном Telegram
     const viewport = document.querySelector('meta[name=viewport]');
     const viewportContent = viewport.getAttribute('content');
@@ -182,7 +195,8 @@ if (isMobile) {
     // Подстройка под интерфейс Telegram
     document.documentElement.style.setProperty('--tg-viewport-height', `${window.innerHeight}px`);
   }
-  function displayInstrument(instrument) {
+
+function displayInstrument(instrument) {
     const display = document.getElementById("instrumentDisplay");
     
     // Для инструментов с "/" (EUR/USD)
@@ -197,6 +211,7 @@ if (isMobile) {
     
   }
 }
+
 document.getElementById("instrumentDisplay").innerHTML = 
   instrument.split('/').join('<span>/</span>');
   
@@ -204,3 +219,53 @@ document.getElementById("instrumentDisplay").innerHTML =
   // Инициализация
   window.addEventListener('load', adaptLayout);
   window.addEventListener('resize', adaptLayout);
+
+// Функция для обработки прокрутки
+function handleScroll() {
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const timerContainer = document.querySelector('.timer-container');
+    const bottomBar = document.querySelector('.bottom-bar');
+
+    // Определяем направление прокрутки
+    const scrollingDown = currentScroll > lastScrollTop;
+    const scrollingUp = currentScroll < lastScrollTop;
+    
+    // Проверяем, достаточно ли прокрутили для срабатывания анимации
+    if (Math.abs(currentScroll - lastScrollTop) > scrollThreshold) {
+        if (scrollingDown) {
+            // Прокрутка вниз - скрываем полоску
+            timerContainer?.classList.add('hidden');
+            bottomBar?.classList.add('hidden');
+        } else if (scrollingUp) {
+            // Прокрутка вверх - показываем полоску
+            timerContainer?.classList.remove('hidden');
+            bottomBar?.classList.remove('hidden');
+        }
+        
+        lastScrollTop = currentScroll;
+    }
+
+    // Сбрасываем таймер при каждом событии прокрутки
+    clearTimeout(scrollTimeout);
+    
+    // Устанавливаем таймер для сброса состояния прокрутки
+    scrollTimeout = setTimeout(() => {
+        isScrolling = false;
+        // Если прокрутка остановилась, показываем полоску
+        timerContainer?.classList.remove('hidden');
+        bottomBar?.classList.remove('hidden');
+    }, 300); // Задержка в миллисекундах
+}
+
+// Добавляем обработчик события прокрутки
+window.addEventListener('scroll', handleScroll, { passive: true });
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    const timerContainer = document.querySelector('.timer-container');
+    const bottomBar = document.querySelector('.bottom-bar');
+    
+    // Убедимся, что полоски видны при загрузке
+    timerContainer?.classList.remove('hidden');
+    bottomBar?.classList.remove('hidden');
+});
