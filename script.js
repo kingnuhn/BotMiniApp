@@ -15,6 +15,41 @@ const scrollThreshold = 50; // Минимальное расстояние пр�
 let isScrolling = false;
 let scrollTimeout;
 
+// Theme management
+function initTheme() {
+  const themeButtons = document.querySelectorAll('.theme-btn');
+  const html = document.documentElement;
+  
+  // Load saved theme from localStorage
+  const savedTheme = localStorage.getItem('theme') || 'default';
+  html.setAttribute('data-theme', savedTheme);
+  
+  // Set active button
+  themeButtons.forEach(btn => {
+    if (btn.dataset.theme === savedTheme) {
+      btn.classList.add('active');
+    }
+  });
+
+  // Add click handlers
+  themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      
+      // Update theme
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      
+      // Update active button
+      themeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+
+// Initialize theme when DOM is loaded
+document.addEventListener('DOMContentLoaded', initTheme);
+
 document.addEventListener("DOMContentLoaded", function() {
   const sendButton = document.getElementById("send");
   
