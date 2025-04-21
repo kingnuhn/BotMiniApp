@@ -10,6 +10,9 @@
   --text-color: #ffffff;
   --text-secondary: #cccccc;
   --border-color: #444;
+  
+  /* Transition for theme changes */
+  --theme-transition: 0.5s ease-out;
 }
 
 /* Light theme */
@@ -38,6 +41,14 @@
   --border-color: #333;
 }
 
+/* Add transition to all elements for theme changes */
+html, body, * {
+  transition: background-color var(--theme-transition), 
+              color var(--theme-transition), 
+              border-color var(--theme-transition), 
+              box-shadow var(--theme-transition);
+}
+
 /* ===== RESET & BASE STYLES ===== */
 * {
   box-sizing: border-box;
@@ -56,6 +67,8 @@ body {
   min-height: 100vh;
   padding: 20px;
   font-size: 16px;
+  transition: background-color var(--theme-transition),
+              color var(--theme-transition);
 }
 
 /* ===== LAYOUT CONTAINERS ===== */
@@ -80,7 +93,7 @@ body {
   background-color: var(--bg-color);
   z-index: 100;
   transform: translateY(0);
-  transition: transform 0.3s ease-out;
+  transition: transform 0.3s ease-out, background-color var(--theme-transition);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -89,13 +102,22 @@ body {
   align-items: center;
   justify-content: space-between;
   max-width: 420px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 10px;
+  padding: 0 5px 0 15px;
+  position: relative;
+}
+
+.header-left {
+  position: relative;
+  padding-bottom: 15px;
 }
 
 .header-content h1 {
   margin: 0;
   font-size: clamp(18px, 5vw, 22px);
+  transition: color var(--theme-transition);
+  text-align: left;
 }
 
 .bot-header.hidden {
@@ -106,8 +128,12 @@ body {
   width: 60px;
   height: 3px;
   background-color: var(--primary-color);
-  margin: 10px auto 0;
+  margin: 8px 0 0 0;
   border-radius: 2px;
+  transition: background-color var(--theme-transition);
+  position: absolute;
+  left: 0;
+  bottom: 0;
 }
 
 /* Добавляем отступ для контента, чтобы он не перекрывался заголовком */
@@ -117,7 +143,7 @@ body {
   flex-direction: column;
   gap: 15px;
   padding: 10px;
-  margin-top: 60px; /* Добавляем отступ сверху */
+  margin-top: 80px; /* Уменьшим немного отступ сверху */
 }
 
 /* ===== CARD STYLES ===== */
@@ -127,20 +153,22 @@ body {
   padding: clamp(15px, 3vw, 20px);
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color var(--theme-transition), 
+              box-shadow var(--theme-transition);
 }
 
 .signal-card {
   position: relative;
-  background-color: #2d2d2d;
+  background-color: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
   width: 100%;
   max-width: 350px;
   margin: 0 auto;
-  text-align: center; /* Центрируем весь текст */
+  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Центрируем дочерние элементы */
+  align-items: center;
 }
 
 .signal-card::before {
@@ -213,6 +241,10 @@ select, button {
   border-radius: 8px;
   font-size: clamp(14px, 3.5vw, 16px);
   padding: 0 12px;
+  transition: background-color var(--theme-transition),
+              color var(--theme-transition),
+              border-color var(--theme-transition),
+              box-shadow var(--theme-transition);
 }
 
 select {
@@ -264,7 +296,9 @@ button:disabled {
   letter-spacing: 1px;
   text-transform: uppercase;
   box-shadow: 0 0 15px currentColor;
-  transition: all 0.3s ease;
+  transition: color var(--theme-transition),
+              background-color var(--theme-transition),
+              box-shadow var(--theme-transition);
 }
 
 .buy {
@@ -345,15 +379,27 @@ button:disabled {
   animation-fill-mode: forwards;
 }
 
+#send.disabled {
+  background-color: #2c3e50;
+  position: relative;
+  opacity: 1;
+  color: #fff;
+  font-weight: bold;
+  cursor: not-allowed;
+  animation: pulse-countdown 2s infinite;
+  transition: all 0.3s ease;
+}
+
 #send.disabled::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 3px;
+  height: 4px;
   background-color: #e74c3c;
   width: var(--progress, 100%);
   transition: width 1s linear;
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.7);
 }
 
 /* ===== ANIMATIONS ===== */
@@ -365,10 +411,11 @@ button:disabled {
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-5px); }
-  40% { transform: translateX(5px); }
-  60% { transform: translateX(-5px); }
-  80% { transform: translateX(5px); }
+  10% { transform: translateX(-5px); }
+  30% { transform: translateX(5px); }
+  50% { transform: translateX(-5px); }
+  70% { transform: translateX(5px); }
+  90% { transform: translateX(-5px); }
 }
 
 @keyframes pulse-glow {
@@ -402,9 +449,17 @@ button:disabled {
   100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
 }
 
+@keyframes pulse-countdown {
+  0% { box-shadow: 0 0 10px rgba(44, 130, 224, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(44, 130, 224, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(44, 130, 224, 0.3); }
+}
+
 /* ===== UTILITY CLASSES ===== */
 .shaking {
-  animation: shake 0.5s;
+  animation: shake 0.5s ease-in-out;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5) !important;
+  border-color: #ff3333 !important;
 }
 
 .analyzing {
@@ -529,61 +584,88 @@ button:disabled {
   display: flex;
   justify-content: center;
   gap: 8px;
-  padding: 3px 8px;
+  padding: 2px 5px;
+  background-color: transparent;
+}
+
+.theme-toggle.left {
+  display: none;
+}
+
+.theme-toggle.right {
+  margin-left: auto;
+  gap: 5px;
   background-color: var(--card-bg);
   border-radius: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 5px 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-out;
+  border: 1px solid transparent;
+}
+
+/* Light theme specific styles for theme toggle */
+[data-theme="light"] .theme-toggle.right {
+  background-color: #ffffff;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark theme specific styles for theme toggle */
+[data-theme="dark"] .theme-toggle.right {
+  background-color: #1e1e1e;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Анимация при наведении на контейнер тем */
+.theme-toggle.right:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
 }
 
 .theme-btn {
   background: none;
   border: 1px solid var(--primary-color);
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
+  transition: all 0.3s ease, background-color var(--theme-transition), border-color var(--theme-transition);
+  font-size: 16px;
   padding: 0;
   margin: 0;
   position: relative;
   overflow: hidden;
 }
 
-.theme-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--primary-color);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
+.theme-toggle.right .theme-btn {
+  border: none;
+  background-color: transparent;
+  margin: 0 2px;
 }
 
 .theme-btn:hover {
   transform: scale(1.1);
-  color: white;
+  box-shadow: 0 0 10px rgba(44, 130, 224, 0.3);
 }
 
-.theme-btn:hover::before {
-  opacity: 1;
+.theme-btn:active {
+  transform: scale(0.95);
 }
 
+/* Make active button glow */
 .theme-btn.active {
   background-color: var(--primary-color);
   color: white;
-  box-shadow: 0 0 10px var(--primary-color);
-  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(44, 130, 224, 0.5);
 }
 
-.theme-btn.active::before {
-  opacity: 1;
+.theme-toggle.right .theme-btn.active {
+  background-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(44, 130, 224, 0.3);
 }
 
 /* Light theme specific styles */
@@ -643,7 +725,46 @@ button:disabled {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-[data-theme="light"] .theme-toggle {
-  background-color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+@media (max-width: 400px) {
+  .theme-toggle.right {
+    gap: 3px; /* Еще меньше отступ на маленьких экранах */
+  }
+  
+  .theme-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+}
+
+/* Добавим медиа-запрос для мобильных устройств */
+@media (max-width: 360px) {
+  .header-content {
+    padding: 0 5px 0 10px;
+  }
+  
+  .header-content h1 {
+    font-size: 16px;
+  }
+  
+  .blue-line {
+    width: 40px;
+  }
+}
+
+/* Стиль для заблокированных селектов */
+.disabled-select {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: rgba(200, 200, 200, 0.2);
+  border-color: rgba(200, 200, 200, 0.5);
+}
+
+/* Стиль для стрелки заблокированного селекта */
+.disabled-select::-ms-expand {
+  opacity: 0.5;
+}
+
+select:disabled {
+  cursor: not-allowed;
 }

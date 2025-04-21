@@ -10,6 +10,140 @@ let currentTimer = null;
 let signalEndTime = 0;
 let isSignalActive = false;
 
+// Загружаем сохраненное состояние таймера
+function loadTimerState() {
+  // Дожидаемся, когда DOM полностью загрузится
+  if (!document.getElementById("send")) {
+    // Если DOM еще не загрузился, попробуем загрузить таймер позже
+    setTimeout(loadTimerState, 100);
+    return;
+  }
+
+  const savedEndTime = localStorage.getItem('signalEndTime');
+  const savedSignalData = localStorage.getItem('signalData');
+  
+  if (savedEndTime) {
+    const now = Math.floor(Date.now() / 1000);
+    signalEndTime = parseInt(savedEndTime);
+    
+    // Проверяем, не истек ли уже таймер
+    if (signalEndTime > now) {
+      isSignalActive = true;
+      
+      // Блокируем выпадающие списки
+      disableSelects();
+      
+      // Если есть сохраненные данные о сигнале, восстанавливаем их
+      if (savedSignalData) {
+        try {
+          const signalData = JSON.parse(savedSignalData);
+          
+          // Обновляем отображение сигнала
+          updateSignalDisplay(
+            signalData.signal, 
+            signalData.accuracy.replace('%', ''), 
+            signalData.signal === "ПОКУПКА"
+          );
+          
+          // Получаем ссылку на кнопку
+          const button = document.getElementById("send");
+          
+          // Вычисляем оставшееся время
+          const remainingTime = signalEndTime - now;
+          const originalDuration = 60; // 1 минута в секундах
+          
+          console.log("Восстановление таймера:", remainingTime, "секунд осталось");
+          
+          // Применяем стили напрямую к кнопке
+          button.classList.add("disabled");
+          
+          // Устанавливаем прогресс-бар
+          const progress = (remainingTime / originalDuration) * 100;
+          button.style.setProperty('--progress', `${progress}%`);
+          
+          // Обновляем текст кнопки
+          const minutes = Math.floor(remainingTime / 60);
+          const seconds = remainingTime % 60;
+          button.textContent = `🕒 ${minutes}:${seconds.toString().padStart(2, '0')}`;
+          
+          // Запускаем таймер с оставшимся временем
+          setTimeout(() => {
+            startCountdown(button, remainingTime);
+          }, 500);
+          
+        } catch (e) {
+          console.error("Ошибка при восстановлении данных таймера:", e);
+          clearTimerState();
+        }
+      }
+    } else {
+      // Если таймер истек, очищаем localStorage
+      clearTimerState();
+    }
+  }
+}
+
+// Сохраняем состояние таймера
+function saveTimerState(signalType, accuracy, isBuy, duration) {
+  localStorage.setItem('signalEndTime', signalEndTime.toString());
+  localStorage.setItem('signalData', JSON.stringify({
+    instrument: document.getElementById("instrument").value,
+    time: "1 минута",
+    signal: signalType,
+    accuracy: `${accuracy}%`,
+    isBuy: isBuy
+  }));
+}
+
+// Очищаем состояние таймера
+function clearTimerState() {
+  console.log("Очистка состояния таймера из localStorage");
+  localStorage.removeItem('signalEndTime');
+  localStorage.removeItem('signalData');
+  isSignalActive = false;
+  
+  // Разблокируем выпадающие списки
+  enableSelects();
+  
+  // Убедимся, что кнопка находится в правильном состоянии
+  const button = document.getElementById("send");
+  if (button) {
+    resetButton(button);
+  }
+}
+
+// Функция для блокировки выпадающих списков
+function disableSelects() {
+  const instrumentSelect = document.getElementById("instrument");
+  const timeSelect = document.getElementById("time");
+  
+  if (instrumentSelect) {
+    instrumentSelect.disabled = true;
+    instrumentSelect.classList.add("disabled-select");
+  }
+  
+  if (timeSelect) {
+    timeSelect.disabled = true;
+    timeSelect.classList.add("disabled-select");
+  }
+}
+
+// Функция для разблокировки выпадающих списков
+function enableSelects() {
+  const instrumentSelect = document.getElementById("instrument");
+  const timeSelect = document.getElementById("time");
+  
+  if (instrumentSelect) {
+    instrumentSelect.disabled = false;
+    instrumentSelect.classList.remove("disabled-select");
+  }
+  
+  if (timeSelect) {
+    timeSelect.disabled = false;
+    timeSelect.classList.remove("disabled-select");
+  }
+}
+
 let lastScrollTop = 0;
 const scrollThreshold = 50; // Минимальное расстояние прокрутки для срабатывания анимации
 let isScrolling = false;
@@ -50,14 +184,55 @@ function initTheme() {
 // Initialize theme when DOM is loaded
 document.addEventListener('DOMContentLoaded', initTheme);
 
+// Глобальная инициализация после полной загрузки страницы
+window.addEventListener('load', function() {
+  console.log("Страница полностью загружена");
+  
+  // Инициализируем адаптивную разметку
+  adaptLayout();
+  adjustLayout();
+  
+  // Инициализируем тему
+  initTheme();
+  
+  // Инициализируем обработчики прокрутки
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  
+  // Последним шагом загружаем состояние таймера - после того как все элементы инициализированы
+  console.log("Пытаемся загрузить состояние таймера...");
+  setTimeout(loadTimerState, 300);
+  
+  // Отладка состояния таймера
+  setInterval(() => {
+    if (isSignalActive) {
+      const now = Math.floor(Date.now() / 1000);
+      const remaining = signalEndTime - now;
+      console.log(
+        "Статус таймера:", 
+        isSignalActive ? "активен" : "неактивен", 
+        "Осталось:", remaining, 
+        "секунд, Кнопка:", 
+        document.getElementById("send")?.className || "не найдена"
+      );
+    }
+  }, 10000); // Проверяем каждые 10 секунд
+});
+
 document.addEventListener("DOMContentLoaded", function() {
+  console.log("DOM загружен, инициализируем UI");
+  
   const sendButton = document.getElementById("send");
   
   sendButton.addEventListener("click", function() {
     if (isSignalActive) {
-      const now = Math.floor(Date.now() / 1000);
-      const remaining = signalEndTime - now;
-      alert(`Подождите ещё ${remaining} секунд для нового сигнала`);
+      // Вместо alert сделаем кнопку мигающей для индикации, что нужно подождать
+      const button = this;
+      button.classList.add("shaking");
+      
+      // Убираем анимацию через некоторое время
+      setTimeout(() => {
+        button.classList.remove("shaking");
+      }, 500);
       return;
     }
 
@@ -75,6 +250,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const timeSelect = document.getElementById("time");
     const duration = getDurationInSeconds(timeSelect.value);
     
+    // Блокируем выпадающие списки
+    disableSelects();
+    
     // Фиксируем сигнал
     const isBuy = Math.random() > 0.5;
     const signalType = isBuy ? "ПОКУПКА" : "ПРОДАЖА";
@@ -86,10 +264,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // Запускаем таймер
     startCountdown(button, duration);
 
+    // Сохраняем состояние таймера
+    saveTimerState(signalType, accuracy, isBuy, duration);
+
     // Отправляем данные
     tg.sendData(JSON.stringify({
       instrument: document.getElementById("instrument").value,
-      time: timeSelect.value,
+      time: "1 минута", // Всегда отправляем "1 минута"
       signal: signalType,
       accuracy: `${accuracy}%`,
       duration: duration
@@ -99,12 +280,8 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function getDurationInSeconds(timeStr) {
-    const times = {
-      "1 минута": 60,
-      "5 минут": 300,
-      "15 минут": 900
-    };
-    return times[timeStr] || 60;
+    // Всегда возвращаем 60 секунд (1 минута) независимо от выбранного значения
+    return 60;
   }
 
   function updateSignalDisplay(signalType, accuracy, isBuy) {
@@ -112,8 +289,7 @@ document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("instrument").value;
     document.getElementById("signalType").textContent = signalType;
     document.getElementById("signalType").className = `signal-type ${isBuy ? 'buy' : 'sell'}`;
-    document.getElementById("timeDisplay").textContent = 
-      document.getElementById("time").value;
+    document.getElementById("timeDisplay").textContent = "1 минута"; // Всегда показываем "1 минута"
     document.getElementById("accuracyDisplay").textContent = `${accuracy}%`;
     
     document.getElementById("loading").style.display = "none";
@@ -121,44 +297,83 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function startCountdown(button, duration) {
+    console.log("Запуск таймера на", duration, "секунд");
+    
+    // Очищаем предыдущий таймер, если он был
+    if (currentTimer) {
+      clearInterval(currentTimer);
+    }
+
+    // Устанавливаем визуальные стили
     button.classList.remove("analyzing");
-    button.disabled = false;
     button.classList.add("disabled");
+    button.disabled = false; // Нужно для работы CSS
     
-    signalEndTime = Math.floor(Date.now() / 1000) + duration;
+    // Если это новый таймер (не восстановленный)
+    if (!isSignalActive) {
+      signalEndTime = Math.floor(Date.now() / 1000) + duration;
+    }
+    
     let remaining = duration;
+    const originalDuration = 60; // Базовая длительность для нормализации прогресса
     
-    // Устанавливаем прогресс-бар
-    button.style.setProperty('--progress', '100%');
+    // Устанавливаем начальное значение прогресс-бара
+    const initialProgress = (remaining / originalDuration) * 100;
+    button.style.setProperty('--progress', `${initialProgress}%`);
     
-    // Обновляем каждую секунду
+    // Форматируем текст кнопки
+    const formatButtonText = (rem) => {
+      const minutes = Math.floor(rem / 60);
+      const seconds = rem % 60;
+      return `🕒 ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+    
+    // Устанавливаем начальный текст
+    button.textContent = formatButtonText(remaining);
+    
+    // Отладочная информация
+    console.log("Стартовое время:", formatButtonText(remaining), "Прогресс:", initialProgress.toFixed(2) + "%");
+    
+    // Запускаем интервал обновления
     currentTimer = setInterval(() => {
       remaining--;
       
       // Обновляем прогресс-бар
-      const progress = (remaining / duration) * 100;
+      const progress = (remaining / originalDuration) * 100;
       button.style.setProperty('--progress', `${progress}%`);
       
       // Обновляем текст кнопки
-      const minutes = Math.floor(remaining / 60);
-      const seconds = remaining % 60;
-      button.textContent = `🕒 ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      button.textContent = formatButtonText(remaining);
       
       // По окончании времени
       if (remaining <= 0) {
+        console.log("Таймер завершен");
         clearInterval(currentTimer);
         resetButton(button);
+        // Очищаем состояние таймера
+        clearTimerState();
       }
     }, 1000);
+    
+    // Устанавливаем флаг, что таймер активен
+    isSignalActive = true;
   }
 
   function resetButton(button) {
-    clearInterval(currentTimer);
+    console.log("Сброс кнопки в исходное состояние");
+    
+    if (currentTimer) {
+      clearInterval(currentTimer);
+      currentTimer = null;
+    }
+    
+    // Разблокируем выпадающие списки
+    enableSelects();
+    
     button.classList.remove("disabled");
     button.style.removeProperty('--progress');
     button.textContent = "ПОЛУЧИТЬ СИГНАЛ";
     isSignalActive = false;
-    currentTimer = null;
   }
 });
 
