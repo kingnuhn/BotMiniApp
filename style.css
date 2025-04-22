@@ -334,7 +334,7 @@ button:disabled {
   overflow: hidden;
   transition: height 0.3s ease-out;
   background: var(--card-bg);
-  border-radius: 0 0 8px 8px;
+  border-radius: 8px;
   margin-top: -20px;
   position: fixed;
   bottom: 0;
@@ -400,6 +400,7 @@ button:disabled {
   width: var(--progress, 100%);
   transition: width 1s linear;
   box-shadow: 0 0 8px rgba(231, 76, 60, 0.7);
+  border-radius: 2px;
 }
 
 /* ===== ANIMATIONS ===== */
@@ -483,6 +484,7 @@ button:disabled {
   z-index: 100;
   transform: translateY(0);
   transition: transform 0.3s ease-out;
+  border-radius: 2px;
 }
 
 .bottom-bar.hidden {
@@ -767,4 +769,19 @@ button:disabled {
 
 select:disabled {
   cursor: not-allowed;
+}
+
+/* Стиль для водяного знака */
+.watermark {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  z-index: 99;
+  pointer-events: none;
+  font-style: italic;
 }
